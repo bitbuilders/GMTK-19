@@ -60,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GridWidth: 5
   m_GridHeight: 12
+  m_Grid: {fileID: 5155103885838545933}
 --- !u!1 &5155103885887906302
 GameObject:
   m_ObjectHideFlags: 0
