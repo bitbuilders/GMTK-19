@@ -62,6 +62,8 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     void Update()
     {
+        if (m_AudioSource.time == 0.0f) return;
+
         float songDelta = m_AudioSource.time - m_LastSongTime;
         if (m_AudioSource.time < m_LastSongTime) songDelta += m_AudioSource.clip.length;
 
