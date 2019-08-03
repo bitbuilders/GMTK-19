@@ -12,6 +12,7 @@ public class wonHUD : MonoBehaviour
     [SerializeField] Image m_UpControl = null;
     [SerializeField] Image m_SideControl = null;
     [SerializeField] Image m_DownControl = null;
+    [SerializeField, Range(0.5f, 5.0f)] float m_ControlsScale = 3.0f;
 
     void LateUpdate()
     {
@@ -33,6 +34,6 @@ public class wonHUD : MonoBehaviour
         if (!sprite) return;
 
         Vector2 size = new Vector2(sprite.bounds.size.x, sprite.bounds.size.y);
-        image.rectTransform.sizeDelta = size * 16.0f * 2.0f;
+        image.rectTransform.sizeDelta = size * 16.0f * m_ControlsScale;
     }
 }
