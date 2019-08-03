@@ -25,14 +25,16 @@ public class Makaze : Warrior
 
     public void OnAttackBeat()
     {
-        if (m_Pauses < m_MaxPauses && Position.y == -1)
+        if (Position.y == -1 && m_Pauses < m_MaxPauses)
         {
             m_Pauses++;
             return;
         }
-        if (MakazeClan.Instance.Enemy.Position - Position == Vector2.up)
+
+        Warrior enemy = GetAboveEnemy();
+        if (enemy)
         {
-            Attack();
+            Attack(enemy);
         }
         else if (Position.y == -1 && m_Pauses == m_MaxPauses)
         {
@@ -45,9 +47,32 @@ public class Makaze : Warrior
         }
     }
 
-    void Attack()
+    void Attack(Warrior enemy)
     {
-        MakazeClan.Instance.Enemy.Kill();
+        enemy.Kill();
+    }
+
+    Warrior GetAboveEnemy()
+    {
+        Warrior enemy = null;
+
+        if (MakazeClan.Instance.Enemy.Position - Position == Vector2.up)
+        {
+            enemy = MakazeClan.Instance.Enemy;
+        }
+        else
+        {
+            foreach (Warrior enemyAlly in MakazeClan.Instance.Enemy.Allies)
+            {
+                if (enemyAlly.Position - Position == Vector2.up)
+                {
+                    enemy = enemyAlly;
+                    break;
+                }
+            }
+        }
+
+        return enemy;
     }
 
     public override void Kill()

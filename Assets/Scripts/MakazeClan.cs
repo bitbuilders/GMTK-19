@@ -5,11 +5,11 @@ using UnityEngine;
 public class MakazeClan : Singleton<MakazeClan>
 {
     [SerializeField] GameObject m_MakazeTemplate = null;
-    [SerializeField] Warrior m_Won = null;
-    [SerializeField, Range(0, 10)] int m_SpawnRateMin = 1;
-    [SerializeField, Range(0, 10)] int m_SpawnRateMax = 3;
+    [SerializeField] won m_Won = null;
+    [SerializeField, Range(0, 20)] int m_SpawnRateMin = 1;
+    [SerializeField, Range(0, 20)] int m_SpawnRateMax = 3;
 
-    public Warrior Enemy { get { return m_Won; } }
+    public won Enemy { get { return m_Won; } }
     public List<Makaze> Makazes { get; private set; }
     int m_SpawnRate = 0;
     int m_BeatsPassed = 0;

@@ -16,7 +16,7 @@ public class WarriorBeat : Singleton<WarriorBeat>
     int m_BPM = 60;
     [Tooltip("Beats per minute"), SerializeField, Range(0.0f, 5.0f)]
     float m_MusicTimeOffset = 0.5f;
-    [Tooltip("How much time the player has to attack"), SerializeField, Range(0.0f, 0.25f)]
+    [Tooltip("How much time the player has to attack"), SerializeField, Range(0.0f, 0.5f)]
     float m_AttackWindow = 0.09f;
     [Tooltip("How much time the player has to attack"), SerializeField, Range(1.0f, 5.0f)]
     float m_ForgivingMultiplier = 2.0f;
@@ -32,21 +32,27 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_PlayerTime = 0.0f;
     float m_PostPlayerTime = 0.0f;
     float m_EnemyTime = 0.0f;
+    float m_LastSongTime = 0.0f;
+    float m_HalfWindow = 0.0f;
 
     private void Start()
     {
         m_BPS = 60.0f / m_BPM;
         m_EnemyTime = m_BPS * m_EnemyOffset;
         m_PlayerTime -= m_MusicTimeOffset;
+        m_HalfWindow = m_AttackWindow / 2.0f;
 
         m_AudioSource = GetComponent<AudioSource>();
-        m_AudioSource.pitch = m_BPM / 60.0f;
+        //m_AudioSource.pitch = m_BPM / 60.0f;
         m_AudioSource.Play();
     }
 
     void Update()
     {
-        m_PlayerTime += Time.deltaTime;
+        float songDelta = m_AudioSource.time - m_LastSongTime;
+        if (m_AudioSource.time < m_LastSongTime) songDelta += m_AudioSource.clip.length;
+
+        m_PlayerTime += songDelta;
         if (m_PlayerTime >= m_BPS)
         {
             m_PlayerTime -= m_BPS;
@@ -54,32 +60,34 @@ public class WarriorBeat : Singleton<WarriorBeat>
             m_PlayerBeat.Invoke();
         }
 
-        m_PostPlayerTime += Time.deltaTime;
+        m_PostPlayerTime += songDelta;
         if (m_PostPlayerTime >= m_BPS + m_AttackWindow)
         {
             m_PostPlayerTime -= m_BPS;
             m_PlayerPostBeat.Invoke();
         }
 
-        m_EnemyTime += Time.deltaTime;
+        m_EnemyTime += songDelta;
         if (m_EnemyTime >= m_BPS)
         {
             m_EnemyTime -= m_BPS;
             m_EnemyBeat.Invoke();
         }
+        
+        m_LastSongTime = m_AudioSource.time;
     }
 
     public bool IsInBeat()
     {
-        //print(Time.time - m_LastBeat);
-        return Time.time - m_LastBeat <= m_AttackWindow ||
-            m_BPS - (Time.time - m_LastBeat) <= m_AttackWindow;
+        //print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
+        return Time.time - m_LastBeat <= m_HalfWindow ||
+            m_BPS - (Time.time - m_LastBeat) <= m_HalfWindow;
     }
 
     public bool IsInBeatForgiving()
     {
-        float leeway = m_AttackWindow * m_ForgivingMultiplier;
-        return Time.time - m_LastBeat <= m_AttackWindow ||
+        float leeway = m_HalfWindow * m_ForgivingMultiplier;
+        return Time.time - m_LastBeat <= m_HalfWindow ||
             m_BPS - (Time.time - m_LastBeat) <= leeway;
     }
 

@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class BattleGrid : Singleton<BattleGrid>
 {
-    [Tooltip("How many tiles wide the grid is"), SerializeField, Range(1, 10)]
+    [Tooltip("How many tiles wide the grid is"), SerializeField, Range(1, 15)]
     int m_GridWidth = 5;
-    [Tooltip("How many tiles tall the grid is"), SerializeField, Range(1, 10)]
-    int m_GridHeight = 6;
+    [Tooltip("How many tiles tall the grid is"), SerializeField, Range(1, 15)]
+    int m_GridHeight = 12;
 
     public Vector2Int Bounds { get { return new Vector2Int(m_GridWidth - 1, -m_GridHeight + 1); } }
     public Vector3 TileOffset { get; private set; }
 
     Grid m_Grid = null;
 
-    private void Start()
+    private void Awake()
     {
         m_Grid = GetComponent<Grid>();
         TileOffset = m_Grid.cellSize / 2.0f;

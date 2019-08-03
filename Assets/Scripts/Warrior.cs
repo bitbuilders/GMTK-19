@@ -13,7 +13,7 @@ public abstract class Warrior : MonoBehaviour
         Position = StartingPosition;
     }
 
-    protected void Move(Vector2Int amount)
+    public void Move(Vector2Int amount)
     {
         Vector2Int tile = Position + amount;
         Vector3 position = BattleGrid.Instance.GetPosition(tile);
@@ -21,6 +21,17 @@ public abstract class Warrior : MonoBehaviour
         if (position != Vector3.zero)
         {
             Position = tile;
+            transform.position = position;
+        }
+    }
+
+    public void GhostMove(Vector2Int amount)
+    {
+        Vector2Int tile = Position + amount;
+        Vector3 position = BattleGrid.Instance.GetPosition(tile);
+
+        if (position != Vector3.zero)
+        {
             transform.position = position;
         }
     }
