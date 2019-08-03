@@ -44,6 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a93f1179e6c38e4faee52cf420d273d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_StartingColumn: 3
+  m_Won: 0
+  m_WonCap: 16
+  m_FlairWon: 1
+  m_MoveWon: 2
+  m_AttackWon: 3
+  m_ThrowWon: 3
 --- !u!1 &8374980906962447033
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +120,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 62cb770b325bf6243a09475d5bf300ac, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e7c39b22346aae54c9d51ad644a9c95f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
