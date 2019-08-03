@@ -16,7 +16,7 @@ public struct Movement
 
 public class HeldAlly
 {
-    public Warrior Ally { get; set; }
+    public Ally Ally { get; set; }
     public Vector2Int StartPosition { get; set; }
 }
 
@@ -27,6 +27,7 @@ public class won : Warrior
     [SerializeField, Range(0, 16)] int m_WonCap = 16;
     [SerializeField, Range(0, 5)] int m_FlairWon = 1;
     [SerializeField, Range(0, 5)] int m_PickupWon = 2;
+    [SerializeField, Range(0, 5)] int m_SwapWon = 2;
     [SerializeField, Range(0, 5)] int m_DropWon = 1;
     [SerializeField, Range(0, 5)] int m_MoveWon = 2;
     [SerializeField, Range(0, 5)] int m_AttackWon = 3;
@@ -72,10 +73,10 @@ public class won : Warrior
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
-            Warrior ally = GetAllyOnTile();
+            Ally ally = GetAllyOnTile(Position);
             if (m_HeldAlly.Ally == null)
             {
-                if (ally)
+                if (ally && !ally.Attacking)
                 {
                     // Pickup
                     Pickup(ally);
@@ -93,7 +94,7 @@ public class won : Warrior
             }
         }
 
-        Warrior allyOnSprite = GetAllyOnTile();
+        Ally allyOnSprite = GetAllyOnTile(Position);
         if (m_HeldAlly.Ally)
         {
             if (allyOnSprite) DirectionList.Instance.SetSwapSprite();
@@ -103,7 +104,7 @@ public class won : Warrior
         }
         else
         {
-            if (allyOnSprite) DirectionList.Instance.SetPickupSprite();
+            if (allyOnSprite && !allyOnSprite.Attacking) DirectionList.Instance.SetPickupSprite();
             else DirectionList.Instance.SetFlairSprite();
 
             DirectionList.Instance.SetPunchSprite();
@@ -124,12 +125,6 @@ public class won : Warrior
     public void PostBeatUpdate()
     {
         m_MovedThisBeat = false;
-        //if (!m_StreakedLastBeat)
-        //{
-        //    Streak = 0;
-        //}
-
-        //m_StreakedLastBeat = false;
     }
 
     private void MoveToSide(Direction direction)
@@ -207,8 +202,10 @@ public class won : Warrior
 
     }
 
-    void Pickup(Warrior ally)
+    void Pickup(Ally ally)
     {
+        if (ally.Attacking) return;
+
         SpendWon(m_PickupWon);
 
         m_HeldAlly.Ally = ally;
@@ -216,9 +213,9 @@ public class won : Warrior
         UpdateHeldAllyPosition();
     }
 
-    void Drop()
+    void Drop(bool spendWon = true)
     {
-        SpendWon(m_DropWon);
+        if (spendWon) SpendWon(m_DropWon);
 
         ResetHeldAllyPosition();
         m_HeldAlly.Ally = null;
@@ -226,22 +223,30 @@ public class won : Warrior
 
     void Swap(Warrior ally)
     {
+        SpendWon(m_SwapWon);
+
         ally.Move(m_HeldAlly.StartPosition - ally.Position);
-        Drop();
+        Drop(false);
     }
 
     void Throw()
     {
+        if (!m_HeldAlly.Ally) return;
+
         SpendWon(m_ThrowWon);
 
         if (WarriorBeat.Instance.IsInBeat()) StreakUp();
         else Streak = 0;
 
-        // Toss
-        Vector2Int tossPos = new Vector2Int(Position.x, BattleGrid.Instance.Bounds.y);
+        Ally allyToThrow = m_HeldAlly.Ally;
+        Drop(false);
+
+        Vector2Int tossPos = new Vector2Int(Position.x, BattleGrid.Instance.Bounds.y + 1);
 
         Makaze makaze = GetMakazeInColumn();
         if (makaze) tossPos = makaze.Position + Vector2Int.up;
+
+        allyToThrow.Attack(tossPos);
     }
 
     Makaze GetMakazeInColumn()
@@ -265,19 +270,68 @@ public class won : Warrior
         return makaze;
     }
 
-    Warrior GetAllyOnTile()
+    Ally GetAllyOnTile(Vector2Int position)
     {
-        foreach (Warrior ally in Allies)
+        foreach (Ally ally in Allies)
         {
             if (!ally || ally == m_HeldAlly.Ally) continue;
 
-            if (ally.Position - Position == Vector2Int.zero)
+            if (ally.Position - position == Vector2Int.zero)
             {
                 return ally;
             }
         }
 
         return null;
+    }
+
+    Ally GetAllyOnTile(Vector2Int position, Ally source, out int count)
+    {
+        Ally a = null;
+        count = 0;
+
+        foreach (Ally ally in Allies)
+        {
+            if (!ally || ally == m_HeldAlly.Ally) continue;
+
+            if (ally.Position - position == Vector2Int.zero)
+            {
+                if (ally != source || a == null) a = ally;
+                count++;
+            }
+        }
+
+        return a;
+    }
+
+    public Vector2Int GetOpenTile(Vector2Int near, Ally source)
+    {
+        Vector2Int tile = near;
+        int count;
+        Ally a = GetAllyOnTile(tile, source, out count);
+        Ally currentAlly = a == source && count == 1 ? null : a;
+        int val = 1;
+        bool left = true;
+        
+        while ((currentAlly != null && currentAlly != source) || !BattleGrid.Instance.ValidSpace(tile))
+        {
+            if (left)
+            {
+                tile = near + (Vector2Int.left * val);
+                left = false;
+            }
+            else
+            {
+                tile = near + (Vector2Int.right * val);
+                left = true;
+                val++;
+            }
+
+            currentAlly = GetAllyOnTile(tile);
+            if (val >= BattleGrid.Instance.Bounds.x / 2 + 1) break;
+        }
+        
+        return tile;
     }
 
     void StreakUp()

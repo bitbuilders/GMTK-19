@@ -48,6 +48,21 @@ public class MakazeClan : Singleton<MakazeClan>
         return new Vector2Int(x, y);
     }
 
+    public void RegisterAttack(Vector2Int[] hitPoints)
+    {
+        Makaze[] tempMakazes = Makazes.ToArray();
+        for (int i = 0; i < hitPoints.Length; i++)
+        {
+            for (int j = 0; j < tempMakazes.Length; j++)
+            {
+                if (tempMakazes[j].Position == hitPoints[i])
+                {
+                    tempMakazes[j].Kill();
+                }
+            }
+        }
+    }
+
     void ResetSpawnRate()
     {
         m_SpawnRate = Random.Range(m_SpawnRateMin, m_SpawnRateMax + 1);

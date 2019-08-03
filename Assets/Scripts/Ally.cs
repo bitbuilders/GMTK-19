@@ -26,8 +26,12 @@ public class Ally : Warrior
         m_won = MakazeClan.Instance.Enemy;
         m_won.Allies.Add(this);
 
-        m_Weapon.transform.parent = m_Arm;
-        m_Weapon.transform.localPosition = Vector2.zero;
+        if (m_Weapon)
+        {
+            m_Weapon.transform.parent = m_Arm;
+            OrientWeapon();
+        }
+
 
         WarriorBeat.Instance.AddBeatListener(OnBeat);
     }
@@ -41,8 +45,10 @@ public class Ally : Warrior
             m_Pauses++;
             return;
         }
-
-        GhostMove(Position - m_GhostPosition);
+        
+        Vector2Int pos = m_won.GetOpenTile(Position, this);
+        Move(pos - Position, true);
+        Attacking = false;
     }
 
     public void Attack(Vector2Int position)
@@ -51,6 +57,19 @@ public class Ally : Warrior
         m_GhostPosition = position;
         m_Pauses = 0;
         GhostMove(position - Position);
+        if (m_Weapon) m_Weapon.Attack(Position, transform.position);
+    }
+
+    public void SetWeapon(Weapon weapon)
+    {
+        m_Weapon = weapon;
+        m_Weapon.transform.parent = m_Arm;
+        OrientWeapon();
+    }
+
+    public void OrientWeapon()
+    {
+        m_Weapon.transform.localPosition = Vector2.zero;
     }
 
     public override void Kill()

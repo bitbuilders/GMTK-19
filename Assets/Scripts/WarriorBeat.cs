@@ -26,8 +26,10 @@ public class WarriorBeat : Singleton<WarriorBeat>
     [SerializeField] PlayerBeat m_PlayerBeat = null;
     [SerializeField] PlayerPostBeat m_PlayerPostBeat = null;
 
+    public float BPS { get; private set; }
+    public float BPM { get { return m_BPM; } }
+
     AudioSource m_AudioSource = null;
-    float m_BPS = 0.0f;
     float m_LastBeat = 0.0f;
     float m_PlayerTime = 0.0f;
     float m_PostPlayerTime = 0.0f;
@@ -37,8 +39,8 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     private void Start()
     {
-        m_BPS = 60.0f / m_BPM;
-        m_EnemyTime = m_BPS * m_EnemyOffset;
+        BPS = 60.0f / m_BPM;
+        m_EnemyTime = BPS * m_EnemyOffset;
         m_PlayerTime -= m_MusicTimeOffset;
         m_HalfWindow = m_AttackWindow / 2.0f;
 
@@ -53,24 +55,24 @@ public class WarriorBeat : Singleton<WarriorBeat>
         if (m_AudioSource.time < m_LastSongTime) songDelta += m_AudioSource.clip.length;
 
         m_PlayerTime += songDelta;
-        if (m_PlayerTime >= m_BPS)
+        if (m_PlayerTime >= BPS)
         {
-            m_PlayerTime -= m_BPS;
+            m_PlayerTime -= BPS;
             m_LastBeat = Time.time;
             m_PlayerBeat.Invoke();
         }
 
         m_PostPlayerTime += songDelta;
-        if (m_PostPlayerTime >= m_BPS + m_AttackWindow)
+        if (m_PostPlayerTime >= BPS + m_AttackWindow)
         {
-            m_PostPlayerTime -= m_BPS;
+            m_PostPlayerTime -= BPS;
             m_PlayerPostBeat.Invoke();
         }
 
         m_EnemyTime += songDelta;
-        if (m_EnemyTime >= m_BPS)
+        if (m_EnemyTime >= BPS)
         {
-            m_EnemyTime -= m_BPS;
+            m_EnemyTime -= BPS;
             m_EnemyBeat.Invoke();
         }
         
@@ -81,14 +83,14 @@ public class WarriorBeat : Singleton<WarriorBeat>
     {
         //print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
         return Time.time - m_LastBeat <= m_HalfWindow ||
-            m_BPS - (Time.time - m_LastBeat) <= m_HalfWindow;
+            BPS - (Time.time - m_LastBeat) <= m_HalfWindow;
     }
 
     public bool IsInBeatForgiving()
     {
         float leeway = m_HalfWindow * m_ForgivingMultiplier;
         return Time.time - m_LastBeat <= m_HalfWindow ||
-            m_BPS - (Time.time - m_LastBeat) <= leeway;
+            BPS - (Time.time - m_LastBeat) <= leeway;
     }
 
     public void AddBeatListener(UnityAction action)

@@ -13,12 +13,12 @@ public abstract class Warrior : MonoBehaviour
         Position = StartingPosition;
     }
 
-    public void Move(Vector2Int amount)
+    public void Move(Vector2Int amount, bool setPosAnyways = false)
     {
         Vector2Int tile = Position + amount;
         Vector3 position = BattleGrid.Instance.GetPosition(tile);
 
-        if (position != Vector3.zero)
+        if (position != Vector3.zero || setPosAnyways)
         {
             Position = tile;
             transform.position = position;

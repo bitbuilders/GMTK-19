@@ -33,7 +33,7 @@ public class BattleGrid : Singleton<BattleGrid>
         return moveDist;
     }
 
-    private bool ValidSpace(Vector2Int position)
+    public bool ValidSpace(Vector2Int position)
     {
         return position.x >= 0 && position.x <= m_GridWidth - 1 &&
             position.y <= 0 && position.y >= -(m_GridHeight - 1);
@@ -42,5 +42,10 @@ public class BattleGrid : Singleton<BattleGrid>
     public Vector3 GetWorldPosition(Vector2Int tile)
     {
         return m_Grid.CellToWorld((Vector3Int)tile);
+    }
+
+    public Vector2Int GetTilePosition(Vector3 world)
+    {
+        return (Vector2Int)m_Grid.WorldToCell(world);
     }
 }
