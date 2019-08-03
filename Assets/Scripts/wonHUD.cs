@@ -30,6 +30,8 @@ public class wonHUD : MonoBehaviour
 
     void SetImageDims(Image image, Sprite sprite)
     {
+        if (!sprite) return;
+
         Vector2 size = new Vector2(sprite.bounds.size.x, sprite.bounds.size.y);
         image.rectTransform.sizeDelta = size * 16.0f * 2.0f;
     }
