@@ -8,7 +8,7 @@ public enum Direction
     RIGHT
 }
 
-public struct DirectionData
+public struct Action
 {
     public bool Queued;
     public Direction Direction;
@@ -16,6 +16,7 @@ public struct DirectionData
 
 public class won : Warrior
 {
+    [SerializeField, Range(1, 10)] int m_StartingColumn = 3;
     [SerializeField, Range(0, 16)] int m_Won = 0;
     [SerializeField, Range(0, 16)] int m_WonCap = 16;
     [SerializeField, Range(0, 5)] int m_FlairWon = 1;
@@ -26,8 +27,13 @@ public class won : Warrior
     public int Streak { get; private set; }
     public int Won { get { return m_Won; } }
 
-    DirectionData m_QueuedDirection;
+    Action m_QueuedDirection;
     bool m_StreakedLastBeat = false;
+
+    private void Awake()
+    {
+        StartingPosition = Vector2Int.right * (m_StartingColumn - 1);
+    }
 
     void LateUpdate()
     {
@@ -52,7 +58,7 @@ public class won : Warrior
     }
 
     /// <summary>
-    /// Called every beat frame
+    /// Called every beat
     /// </summary>
     public void BeatUpdate()
     {
@@ -61,21 +67,27 @@ public class won : Warrior
             m_QueuedDirection.Queued = false;
             MoveByDirection(m_QueuedDirection.Direction);
         }
+    }
 
-        // TODO Reset streak the beat you didn't streak
+    /// <summary>
+    /// Called after attack window for every beat
+    /// </summary>
+    public void PostBeatUpdate()
+    {
+        //if (!m_StreakedLastBeat)
+        //{
+        //    Streak = 0;
+        //}
 
-        if (!m_StreakedLastBeat)
-        {
-            Streak = 0;
-        }
-
-        m_StreakedLastBeat = false;
+        //m_StreakedLastBeat = false;
     }
 
     private void MoveToSide(Direction direction)
     {
+        if (m_QueuedDirection.Queued) return;
+
         Streak = 0;
-        m_Won -= m_MoveWon;
+        SpendWon(m_MoveWon);
 
         if (WarriorBeat.Instance.IsInBeat())
         {
@@ -84,15 +96,8 @@ public class won : Warrior
         else
         {
             // Queue move
-            if (m_QueuedDirection.Queued)
-            {
-                m_Won += m_MoveWon; // Refund
-            }
-            else
-            {
-                m_QueuedDirection.Queued = true;
-                m_QueuedDirection.Direction = direction;
-            }
+            m_QueuedDirection.Queued = true;
+            m_QueuedDirection.Direction = direction;
         }
     }
 
@@ -112,7 +117,7 @@ public class won : Warrior
 
     void Attack()
     {
-        m_Won -= m_AttackWon;
+        SpendWon(m_AttackWon);
         if (!WarriorBeat.Instance.IsInBeat())
         {
             Streak = 0;
@@ -120,20 +125,24 @@ public class won : Warrior
         }
 
         StreakUp();
-        m_Won += Streak;
 
         // Swing
-
+        foreach (Makaze m in MakazeClan.Instance.Makazes)
+        {
+            if (m.Position - Position == Vector2.down)
+            {
+                m.Kill();
+                break;
+            }
+        }
     }
 
     void Flair()
     {
-        m_Won -= m_FlairWon;
+        SpendWon(m_FlairWon);
 
         if (WarriorBeat.Instance.IsInBeat()) StreakUp();
         else Streak = 0;
-
-        m_Won += Streak;
 
         // Pump your fist
 
@@ -141,12 +150,10 @@ public class won : Warrior
 
     void Throw()
     {
-        m_Won -= m_ThrowWon;
+        SpendWon(m_ThrowWon);
 
         if (WarriorBeat.Instance.IsInBeat()) StreakUp();
         else Streak = 0;
-
-        m_Won += Streak;
         
         // Toss
         
@@ -155,6 +162,20 @@ public class won : Warrior
     void StreakUp()
     {
         Streak++;
+        m_Won += Streak;
+        m_Won = Mathf.Clamp(m_Won, 0, m_WonCap);
+
         m_StreakedLastBeat = true;
+    }
+
+    void SpendWon(int won)
+    {
+        m_Won -= won;
+        m_Won = Mathf.Max(m_Won, 0);
+    }
+
+    public override void Kill()
+    {
+        gameObject.SetActive(false);
     }
 }

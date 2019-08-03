@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class BattleGrid : Singleton<BattleGrid>
 {
-    [Tooltip("The tilemap with the tiles all warriors will use"), SerializeField]
-    Tilemap m_BattleMap = null;
     [Tooltip("How many tiles wide the grid is"), SerializeField, Range(1, 10)]
     int m_GridWidth = 5;
     [Tooltip("How many tiles tall the grid is"), SerializeField, Range(1, 10)]
     int m_GridHeight = 6;
 
+    public Vector2Int Bounds { get { return new Vector2Int(m_GridWidth - 1, -m_GridHeight + 1); } }
     public Vector3 TileOffset { get; private set; }
 
     Grid m_Grid = null;

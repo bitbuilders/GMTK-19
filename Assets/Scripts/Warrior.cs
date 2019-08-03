@@ -4,21 +4,13 @@ using UnityEngine;
 
 public abstract class Warrior : MonoBehaviour
 {
-    [Tooltip("The column this unit will start in"), SerializeField, Range(1, 10)]
-    int m_StartigColumn = 3;
-
-    public int StartingColumn
-    {
-        get { return m_StartigColumn; }
-        set { m_StartigColumn = value; }
-    }
+    public Vector2Int StartingPosition { get; set; }
     public Vector2Int Position { get; protected set; }
 
-    private void Start()
+    virtual public void Start()
     {
-        Vector2Int startTile = Vector2Int.right * (StartingColumn - 1);
-        transform.position = BattleGrid.Instance.GetPosition(startTile);
-        Position = startTile;
+        transform.position = BattleGrid.Instance.GetPosition(StartingPosition);
+        Position = StartingPosition;
     }
 
     protected void Move(Vector2Int amount)
@@ -32,4 +24,6 @@ public abstract class Warrior : MonoBehaviour
             transform.position = position;
         }
     }
+
+    abstract public void Kill();
 }
