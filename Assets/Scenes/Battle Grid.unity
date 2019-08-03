@@ -1352,8 +1352,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BPM: 120
-  m_MusicTimeOffset: 0
-  m_AttackWindow: 0.2
+  m_MusicTimeOffset: 0.1
+  m_AttackWindow: 0.3
   m_ForgivingMultiplier: 1.5
   m_EnemyOffset: 0.5
   m_EnemyBeat:

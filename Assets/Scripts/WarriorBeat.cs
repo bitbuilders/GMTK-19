@@ -92,7 +92,7 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     public bool IsInBeat()
     {
-        //print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
+        print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
         return Time.time - m_LastBeat <= m_HalfWindow ||
             BPS - (Time.time - m_LastBeat) <= m_HalfWindow;
     }
