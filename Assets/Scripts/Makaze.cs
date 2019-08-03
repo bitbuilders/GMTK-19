@@ -28,7 +28,6 @@ public class Makaze : Warrior
         if (m_Pauses < m_MaxPauses && Position.y == -1)
         {
             m_Pauses++;
-            print("hi");
             return;
         }
         if (MakazeClan.Instance.Enemy.Position - Position == Vector2.up)

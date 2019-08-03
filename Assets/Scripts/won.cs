@@ -29,6 +29,7 @@ public class won : Warrior
 
     Action m_QueuedDirection;
     bool m_StreakedLastBeat = false;
+    bool m_MovedThisBeat = false;
 
     private void Awake()
     {
@@ -62,11 +63,7 @@ public class won : Warrior
     /// </summary>
     public void BeatUpdate()
     {
-        if (m_QueuedDirection.Queued)
-        {
-            m_QueuedDirection.Queued = false;
-            MoveByDirection(m_QueuedDirection.Direction);
-        }
+
     }
 
     /// <summary>
@@ -74,6 +71,7 @@ public class won : Warrior
     /// </summary>
     public void PostBeatUpdate()
     {
+        m_MovedThisBeat = false;
         //if (!m_StreakedLastBeat)
         //{
         //    Streak = 0;
@@ -84,20 +82,15 @@ public class won : Warrior
 
     private void MoveToSide(Direction direction)
     {
-        if (m_QueuedDirection.Queued) return;
+        if (m_MovedThisBeat) return;
 
         Streak = 0;
         SpendWon(m_MoveWon);
 
-        if (WarriorBeat.Instance.IsInBeat())
+        if (WarriorBeat.Instance.IsInBeatForgiving())
         {
             MoveByDirection(direction);
-        }
-        else
-        {
-            // Queue move
-            m_QueuedDirection.Queued = true;
-            m_QueuedDirection.Direction = direction;
+            m_MovedThisBeat = true;
         }
     }
 
@@ -113,7 +106,6 @@ public class won : Warrior
                 break;
         }
     }
-
 
     void Attack()
     {
@@ -172,6 +164,10 @@ public class won : Warrior
     {
         m_Won -= won;
         m_Won = Mathf.Max(m_Won, 0);
+        if (m_Won == 0)
+        {
+            //Kill();
+        }
     }
 
     public override void Kill()
