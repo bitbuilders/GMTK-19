@@ -215,6 +215,8 @@ public class won : Warrior
 
     void Drop(bool spendWon = true)
     {
+        if (!m_HeldAlly.Ally) return;
+
         if (spendWon) SpendWon(m_DropWon);
 
         ResetHeldAllyPosition();
@@ -241,7 +243,7 @@ public class won : Warrior
         Ally allyToThrow = m_HeldAlly.Ally;
         Drop(false);
 
-        Vector2Int tossPos = new Vector2Int(Position.x, BattleGrid.Instance.Bounds.y + 1);
+        Vector2Int tossPos = new Vector2Int(Position.x, BattleGrid.Instance.Bounds.y + 2);
 
         Makaze makaze = GetMakazeInColumn();
         if (makaze) tossPos = makaze.Position + Vector2Int.up;
@@ -365,9 +367,41 @@ public class won : Warrior
         m_HeldAlly.Ally.transform.position = transform.position;
     }
 
+    public void Respawn(bool withAliveAllies = false)
+    {
+        gameObject.SetActive(true);
+        m_Won = 1;
+        m_UsedFirstFlair = false;
+        Dead = false;
+
+        ResetPosition();
+
+        if (withAliveAllies)
+        {
+            Ally[] tempAllies = Allies.ToArray();
+            foreach (Ally ally in tempAllies)
+            {
+                if (ally.Dead)
+                {
+                    Allies.Remove(ally);
+                    Destroy(ally.gameObject);
+                }
+            }
+        }
+        foreach (Ally ally in Allies)
+        {
+            if (ally.Dead) ally.Respawn();
+            ally.ResetPosition();
+        }
+    }
+
     public override void Kill()
     {
+        Drop(false);
         gameObject.SetActive(false);
-        m_UsedFirstFlair = false;
+        Dead = true;
+        Respawn();
+
+        Game.Instance.ReplayCurrentLevel();
     }
 }

@@ -6,11 +6,17 @@ public abstract class Warrior : MonoBehaviour
 {
     public Vector2Int StartingPosition { get; set; }
     public Vector2Int Position { get; protected set; }
+    public bool Dead { get; protected set; }
 
     virtual public void Start()
     {
         transform.position = BattleGrid.Instance.GetPosition(StartingPosition);
         Position = StartingPosition;
+    }
+
+    public void ResetPosition()
+    {
+        Move(StartingPosition - Position);
     }
 
     public void Move(Vector2Int amount, bool setPosAnyways = false)

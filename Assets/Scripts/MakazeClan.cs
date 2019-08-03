@@ -20,6 +20,26 @@ public class MakazeClan : Singleton<MakazeClan>
         ResetSpawnRate();
     }
 
+    public void Refresh()
+    {
+        Clear();
+
+        m_BeatsPassed = 0;
+        ResetSpawnRate();
+    }
+
+    public void Clear()
+    {
+        Makaze[] tempMakazes = Makazes.ToArray();
+
+        foreach (Makaze m in tempMakazes)
+        {
+            Destroy(m.gameObject);
+        }
+
+        Makazes.Clear();
+    }
+
     public void OnBeat()
     {
         m_BeatsPassed++;

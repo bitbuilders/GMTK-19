@@ -72,10 +72,18 @@ public class Ally : Warrior
         m_Weapon.transform.localPosition = Vector2.zero;
     }
 
+    public void Respawn()
+    {
+        m_won.Allies.Add(this);
+        gameObject.SetActive(true);
+        Dead = false;
+    }
+
     public override void Kill()
     {
         WarriorBeat.Instance.RemoveBeatListener(OnBeat);
         m_won.Allies.Remove(this);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+        Dead = true;
     }
 }

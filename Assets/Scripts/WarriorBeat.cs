@@ -39,14 +39,25 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     private void Start()
     {
-        BPS = 60.0f / m_BPM;
-        m_EnemyTime = BPS * m_EnemyOffset;
-        m_PlayerTime -= m_MusicTimeOffset;
-        m_HalfWindow = m_AttackWindow / 2.0f;
+        ResetValues();
 
         m_AudioSource = GetComponent<AudioSource>();
         //m_AudioSource.pitch = m_BPM / 60.0f;
         m_AudioSource.Play();
+    }
+
+    public void Replay()
+    {
+        ResetValues();
+        m_AudioSource.Play();
+    }
+
+    void ResetValues()
+    {
+        BPS = 60.0f / m_BPM;
+        m_EnemyTime = BPS * m_EnemyOffset;
+        m_PlayerTime = -m_MusicTimeOffset;
+        m_HalfWindow = m_AttackWindow / 2.0f;
     }
 
     void Update()
