@@ -18,6 +18,8 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_MusicTimeOffset = 0.5f;
     [Tooltip("How much time the player has to attack"), SerializeField, Range(0.0f, 0.25f)]
     float m_AttackWindow = 0.09f;
+    [Tooltip("How much time the player has to attack"), SerializeField, Range(1.0f, 5.0f)]
+    float m_ForgivingMultiplier = 2.0f;
     [Tooltip("Percentage enemy offset from player BPM"), SerializeField, Range(0.0f, 1.0f)]
     float m_EnemyOffset = 0.5f;
     [SerializeField] EnemyBeat m_EnemyBeat = null;
@@ -33,11 +35,12 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     private void Start()
     {
-        m_BPS = m_BPM / 60.0f;
+        m_BPS = 60.0f / m_BPM;
         m_EnemyTime = m_BPS * m_EnemyOffset;
         m_PlayerTime -= m_MusicTimeOffset;
 
         m_AudioSource = GetComponent<AudioSource>();
+        m_AudioSource.pitch = m_BPM / 60.0f;
         m_AudioSource.Play();
     }
 
@@ -71,6 +74,13 @@ public class WarriorBeat : Singleton<WarriorBeat>
         //print(Time.time - m_LastBeat);
         return Time.time - m_LastBeat <= m_AttackWindow ||
             m_BPS - (Time.time - m_LastBeat) <= m_AttackWindow;
+    }
+
+    public bool IsInBeatForgiving()
+    {
+        float leeway = m_AttackWindow * m_ForgivingMultiplier;
+        return Time.time - m_LastBeat <= m_AttackWindow ||
+            m_BPS - (Time.time - m_LastBeat) <= leeway;
     }
 
     public void AddBeatListener(UnityAction action)
