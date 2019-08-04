@@ -162,15 +162,12 @@ public class won : Warrior
 
     private void MoveToSide(Direction direction)
     {
-        if (m_MovedThisBeat) return;
-
         Streak = 0;
         SpendWon(m_MoveWon);
 
         if (WarriorBeat.Instance.IsInBeatForgiving())
         {
             MoveByDirection(direction);
-            m_MovedThisBeat = true;
         }
     }
 
