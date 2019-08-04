@@ -40,6 +40,7 @@ public class won : Warrior
     [SerializeField] AudioClip m_MoveClip;
 
     [SerializeField] GameObject m_SamuraiSprite;
+    [SerializeField] GameObject m_PunchSprite;
 
 
     public int Streak { get; private set; }
@@ -97,7 +98,7 @@ public class won : Warrior
                         if (ally) Swap(ally);
                     }
 
-                    Shop.Instance.Exit();
+                    Shop.Instance.Exit(false);
                 }
                 else
                 {
@@ -122,7 +123,7 @@ public class won : Warrior
                 }
                 else
                 {
-                    Flair();
+                    if (!Shop.Instance.Visiting) Flair();
                 }
             }
             else
@@ -163,6 +164,7 @@ public class won : Warrior
     /// </summary>
     public void PostBeatUpdate()
     {
+        m_PunchSprite.SetActive(false);
         m_MovedThisBeat = false;
         if (!m_StreakedLastBeat)
         {
@@ -175,6 +177,7 @@ public class won : Warrior
     {
         Streak = 0;
         SpendWon(m_MoveWon);
+        if (Won == 0) return;
 
         if (WarriorBeat.Instance.IsInBeatForgiving())
         {
@@ -220,6 +223,7 @@ public class won : Warrior
         m_Voice.Play();
         Streak = 0;
         // Swing
+        m_PunchSprite.SetActive(true);
         foreach (Makaze m in MakazeClan.Instance.Makazes)
         {
             if (m.Position - Position == Vector2.down)
@@ -232,8 +236,6 @@ public class won : Warrior
 
     void Flair()
     {
-        SpendWon(m_FlairWon);
-
         if (WarriorBeat.Instance.IsInBeat() || !m_UsedFirstFlair)
         {
             StreakUp();
@@ -248,6 +250,7 @@ public class won : Warrior
 
         // Pump your fist
 
+        SpendWon(m_FlairWon);
     }
 
     void Pickup(Ally ally)
@@ -284,10 +287,10 @@ public class won : Warrior
     {
         if (!m_HeldAlly.Ally) return;
 
-        SpendWon(m_ThrowWon);
-
         if (WarriorBeat.Instance.IsInBeat()) StreakUp();
         else Streak = 0;
+
+        SpendWon(m_ThrowWon);
 
         Ally allyToThrow = m_HeldAlly.Ally;
         Drop(false);
@@ -404,7 +407,7 @@ public class won : Warrior
         m_Won = Mathf.Max(m_Won, 0);
         if (m_Won == 0)
         {
-            //Kill();
+            Kill();
         }
     }
 
@@ -469,6 +472,7 @@ public class won : Warrior
         Dead = true;
         Respawn(false);
 
-        Game.Instance.ReplayCurrentLevel();
+        if (Shop.Instance.Visiting) Shop.Instance.Exit(true);
+        else Game.Instance.ReplayCurrentLevel();
     }
 }
