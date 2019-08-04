@@ -288,7 +288,7 @@ MonoBehaviour:
     type: 3}
   m_DropSprite: {fileID: 3303988218376537383, guid: 969d629ac3e11144ba88bfba754e6b1b,
     type: 3}
-  m_MoveSprite: {fileID: 473104673983368901, guid: 9af4df31dfb2b724485d1477623a9603,
+  m_MoveSprite: {fileID: 473104673983368901, guid: 6783dab87fd1332499e44bbddf9bc157,
     type: 3}
   m_PunchSprite: {fileID: -6309609620086278508, guid: 969d629ac3e11144ba88bfba754e6b1b,
     type: 3}
@@ -1759,7 +1759,7 @@ SpriteRenderer:
   m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1474328105
