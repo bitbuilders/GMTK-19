@@ -36,6 +36,7 @@ public class Shop : Singleton<Shop>
     [SerializeField, Range(0.0f, 1.0f)] float m_MarginH = 0.3f;
     [SerializeField, Range(0.0f, 1.0f)] float m_PaddingW = 0.33f;
     [SerializeField, Range(0.0f, 1.0f)] float m_PaddingH = 0.66f;
+    [SerializeField] GameObject m_ShopIcon = null;
 
     public bool Visiting { get; set; }
 
@@ -80,12 +81,20 @@ public class Shop : Singleton<Shop>
 
     private void Update()
     {
-        if (!Visiting) return;
+        if (!Visiting)
+        {
+            m_ShopIcon.SetActive(false);
+            return;
+        }
 
         if (MakazeClan.Instance.Enemy.Position.x == 2)
         {
             // Display exit
-
+            m_ShopIcon.SetActive(true);
+        }
+        else
+        {
+            m_ShopIcon.SetActive(false);
         }
 
         if (MakazeClan.Instance.Enemy.Position.x != m_LastX)
@@ -113,7 +122,7 @@ public class Shop : Singleton<Shop>
         m_TempIcons.transform.parent = m_TreeRoot;
         for (int i = 0; i < item.Cost; i++)
         {
-            int x = i;
+            int x = i + 1;
             Vector3 v = start + Vector3.up * x;
             CreateSprite(m_TempIcons.transform, v, canAfford);
         }
@@ -196,7 +205,7 @@ public class Shop : Singleton<Shop>
             x %= BattleGrid.Instance.Bounds.x + 1;
         }
 
-        shopItem.Position = new Vector2Int(x, BattleGrid.Instance.Bounds.y + 1);
+        shopItem.Position = new Vector2Int(x, BattleGrid.Instance.Bounds.y);
         shopItem.Copy = Instantiate(shopItem.Icon, m_TreeRoot);
         shopItem.Copy.transform.position = BattleGrid.Instance.GetWorldPosition(shopItem.Position) + BattleGrid.Instance.TileOffset;
         //if (shopItem.Type == ItemType.ALLY)
