@@ -34,8 +34,13 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_PlayerTime = 0.0f;
     float m_PostPlayerTime = 0.0f;
     float m_EnemyTime = 0.0f;
-    float m_LastSongTime = 0.0f;
+    float m_LastPlayerTime = 0.0f;
+    float m_LastEnemyTime = 0.0f;
     float m_HalfWindow = 0.0f;
+
+    float m_Lifetime = 0.0f;
+    float m_EnemyLifetime = 0.0f;
+    bool m_DonePost = false;
 
     private void Start()
     {
@@ -60,36 +65,54 @@ public class WarriorBeat : Singleton<WarriorBeat>
         m_HalfWindow = m_AttackWindow / 2.0f;
     }
 
+    bool first = true;
     void Update()
     {
         if (m_AudioSource.time == 0.0f) return;
-
-        float songDelta = m_AudioSource.time - m_LastSongTime;
-        if (m_AudioSource.time < m_LastSongTime) songDelta += m_AudioSource.clip.length;
-
-        m_PlayerTime += songDelta;
-        if (m_PlayerTime >= BPS)
+        else if (first)
         {
-            m_PlayerTime -= BPS;
-            m_LastBeat = Time.time;
-            m_PlayerBeat.Invoke();
+            m_Lifetime = m_AudioSource.time;
+            SetEnemyLifetime();
+            first = false;
+        }
+        else
+        {
+            m_Lifetime += Time.deltaTime;
+            m_EnemyLifetime += Time.deltaTime;
         }
 
-        m_PostPlayerTime += songDelta;
-        if (m_PostPlayerTime >= BPS + m_AttackWindow)
+        m_PlayerTime = (m_Lifetime % BPS);
+        if (m_PlayerTime < m_LastPlayerTime)
+        {
+            m_Lifetime = m_AudioSource.time;
+            m_PlayerTime = 0.0f;
+            m_LastBeat = Time.time;
+            m_PlayerBeat.Invoke();
+            m_DonePost = false;
+        }
+        
+        if (m_PlayerTime >= m_AttackWindow && !m_DonePost)
         {
             m_PostPlayerTime -= BPS;
             m_PlayerPostBeat.Invoke();
+            m_DonePost = true;
         }
 
-        m_EnemyTime += songDelta;
-        if (m_EnemyTime >= BPS)
+        m_EnemyTime = m_EnemyLifetime % BPS;
+        if (m_EnemyTime < m_LastEnemyTime)
         {
-            m_EnemyTime -= BPS;
+            SetEnemyLifetime();
+            m_EnemyTime = 0.0f;
             m_EnemyBeat.Invoke();
         }
-        
-        m_LastSongTime = m_AudioSource.time;
+
+        m_LastPlayerTime = m_PlayerTime;
+        m_LastEnemyTime = m_EnemyTime;
+    }
+
+    void SetEnemyLifetime()
+    {
+        m_EnemyLifetime = m_Lifetime + BPS * m_EnemyOffset;
     }
 
     public bool IsInBeat()
