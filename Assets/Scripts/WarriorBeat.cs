@@ -55,6 +55,7 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_Lifetime = 0.0f;
     float m_EnemyLifetime = 0.0f;
     bool m_DonePost = false;
+    bool m_DoneEnemy = false;
 
     private void Awake()
     {
@@ -106,33 +107,30 @@ public class WarriorBeat : Singleton<WarriorBeat>
             m_EnemyLifetime += Time.deltaTime;
         }
 
-        m_PlayerTime = (m_Lifetime % BPS);
+        m_PlayerTime = m_AudioSource.time % BPS;
         if (m_PlayerTime < m_LastPlayerTime)
         {
-            m_Lifetime = m_AudioSource.time;
-            m_PlayerTime = 0.0f;
+            //m_Lifetime = m_AudioSource.time;
+            //m_PlayerTime = m_Lifetime % BPS;
             m_LastBeat = Time.time;
             m_PlayerBeat.Invoke();
             m_DonePost = false;
+            m_DoneEnemy = false;
         }
         
         if (m_PlayerTime >= m_AttackWindow && !m_DonePost)
         {
-            m_PostPlayerTime -= BPS;
             m_PlayerPostBeat.Invoke();
             m_DonePost = true;
         }
-
-        m_EnemyTime = m_EnemyLifetime % BPS;
-        if (m_EnemyTime < m_LastEnemyTime)
+        
+        if (m_PlayerTime >= m_EnemyOffset * BPS && !m_DoneEnemy)
         {
-            SetEnemyLifetime();
-            m_EnemyTime = 0.0f;
             m_EnemyBeat.Invoke();
+            m_DoneEnemy = true;
         }
 
         m_LastPlayerTime = m_PlayerTime;
-        m_LastEnemyTime = m_EnemyTime;
     }
 
     void SetEnemyLifetime()
