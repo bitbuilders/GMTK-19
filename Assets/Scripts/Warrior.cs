@@ -19,7 +19,7 @@ public abstract class Warrior : MonoBehaviour
         Move(StartingPosition - Position);
     }
 
-    public void Move(Vector2Int amount, bool setPosAnyways = false)
+    public virtual void Move(Vector2Int amount, bool setPosAnyways = false)
     {
         Vector2Int tile = Position + amount;
         Vector3 position = BattleGrid.Instance.GetPosition(tile);

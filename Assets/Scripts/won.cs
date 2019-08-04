@@ -34,20 +34,27 @@ public class won : Warrior
     [SerializeField, Range(0, 5)] int m_ThrowWon = 3;
     [SerializeField, Range(0.0f, 2.0f)] float m_HoldHeight = 0.4f;
 
+    [SerializeField] AudioClip m_FlairClip;
+    [SerializeField] AudioClip m_PunchClip;
+    [SerializeField] AudioClip m_PickupClip;
+
     public int Streak { get; private set; }
     public int Won { get { return m_Won; } }
     public List<Ally> Allies { get; private set; }
+
 
     HeldAlly m_HeldAlly = null;
     Movement m_QueuedDirection;
     bool m_MovedThisBeat = false;
     bool m_UsedFirstFlair = false;
+    AudioSource m_Voice;
 
     private void Awake()
     {
         StartingPosition = Vector2Int.right * (m_StartingColumn - 1);
         Allies = new List<Ally>();
         m_HeldAlly = new HeldAlly();
+        m_Voice = GetComponent<AudioSource>();
     }
 
     public override void Start()
@@ -162,6 +169,12 @@ public class won : Warrior
         }
     }
 
+    public override void Move(Vector2Int amount, bool setPosAnyways = false)
+    {
+        base.Move(amount, setPosAnyways);
+        m_Voice.panStereo = -1 + Position.x * .5f;
+    }
+
     void Attack()
     {
         SpendWon(m_AttackWon);
@@ -171,6 +184,8 @@ public class won : Warrior
             return;
         }
 
+        m_Voice.clip = m_PunchClip;
+        m_Voice.Play();
         StreakUp();
 
         // Swing
@@ -192,6 +207,8 @@ public class won : Warrior
         {
             StreakUp();
             m_UsedFirstFlair = true;
+            m_Voice.clip = m_FlairClip;
+            m_Voice.Play();
         }
         else
         {
@@ -207,7 +224,8 @@ public class won : Warrior
         if (ally.Attacking) return;
 
         SpendWon(m_PickupWon);
-
+        m_Voice.clip = m_PickupClip;
+        m_Voice.Play();
         m_HeldAlly.Ally = ally;
         m_HeldAlly.StartPosition = Position;
         UpdateHeldAllyPosition();

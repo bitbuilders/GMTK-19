@@ -14,9 +14,23 @@ public class wonHUD : MonoBehaviour
     [SerializeField] Image m_DownControl = null;
     [SerializeField, Range(0.5f, 5.0f)] float m_ControlsScale = 3.0f;
 
+    [SerializeField] GameObject m_WonTokenPrefab;
+    [SerializeField] GameObject m_WonTokenGrid;
+
     void LateUpdate()
     {
         m_WonText.text = won.Won.ToString();
+        int wonTokensToAdd = won.Won - m_WonTokenGrid.transform.childCount;
+        if (wonTokensToAdd > 0)
+        {
+            Instantiate(m_WonTokenPrefab, m_WonTokenGrid.transform);
+        } else if (wonTokensToAdd < 0)
+        {
+            for (int i = 0; i < Mathf.Abs(wonTokensToAdd); i++)
+            {
+                Destroy(m_WonTokenGrid.transform.GetChild(m_WonTokenGrid.transform.childCount - 1 - i).gameObject);
+            }
+        }
         m_StreakText.text = $"Streak: {won.Streak}";
 
         m_UpControl.sprite = DirectionList.Instance.UpAction.Sprite;
