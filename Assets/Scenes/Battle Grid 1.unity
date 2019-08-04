@@ -562,6 +562,16 @@ PrefabInstance:
       propertyPath: m_PunchSprite
       value: 
       objectReference: {fileID: 8958488422802284362}
+    - target: {fileID: -3953928888393889393, guid: 25752e69f9b01d94fb14c1b065c1cd93,
+        type: 3}
+      propertyPath: m_MoveWon
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3953928888393889393, guid: 25752e69f9b01d94fb14c1b065c1cd93,
+        type: 3}
+      propertyPath: m_SwapWon
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8374980906936024135, guid: 25752e69f9b01d94fb14c1b065c1cd93,
         type: 3}
       propertyPath: m_Name
@@ -874,7 +884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 16
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 640, y: 360}
@@ -1029,24 +1039,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ShopItems:
   - Item: {fileID: 8062966771749050810, guid: 733a0c03f5baca542af8a1c23f5d3a0c, type: 3}
+    Icon: {fileID: 3232976471670265707, guid: cdd3546f54a0b844ba23add75c85e862, type: 3}
     Type: 0
     Cost: 3
   - Item: {fileID: 5638662901762777638, guid: 4240f0a869db7ce47bb51aa3f4f0571d, type: 3}
+    Icon: {fileID: 7239826303492665559, guid: 1dcdfed72919793408f94b66fa778d5c, type: 3}
     Type: 1
     Cost: 3
   - Item: {fileID: 8989453133844867275, guid: 0ed56817ddd8a3b4ca8633aec1631103, type: 3}
+    Icon: {fileID: 6824663010508238130, guid: b671f193df15b6845a90e4d3fbcf6912, type: 3}
     Type: 1
     Cost: 4
   - Item: {fileID: 5578362318562196978, guid: bc92213ab8e7cd745ab4ecf41c0a8949, type: 3}
+    Icon: {fileID: 5837508176928756770, guid: b233b5182bdbffc47bf67f2b1c33d217, type: 3}
     Type: 1
     Cost: 5
   - Item: {fileID: 3639000714458459746, guid: 481e12ebb68aab845b5e9117c0a1e365, type: 3}
+    Icon: {fileID: 8360497200060638094, guid: 6e26dbea88b5f784c95ab37e2ef3f422, type: 3}
     Type: 1
     Cost: 6
   m_TreeRoot: {fileID: 2098251117}
   m_RegularLane: {fileID: 81084351}
   m_MinItems: 2
   m_MaxItems: 4
+  m_WonIcon: {fileID: 2727744409140550311, guid: d369b9e79fbdc5247832df88347836d6,
+    type: 3}
+  m_AffordColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_NoMoneyColor: {r: 1, g: 0, b: 0, a: 1}
+  m_IconScale: 0.5
+  m_MarginW: 0.2
+  m_MarginH: 0.3
+  m_PaddingW: 0.33
+  m_PaddingH: 0.4
 --- !u!4 &691754877
 Transform:
   m_ObjectHideFlags: 0
@@ -2345,7 +2369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 16
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 640, y: 360}
@@ -2616,7 +2640,7 @@ MonoBehaviour:
   m_RefResolutionY: 360
   m_UpscaleRT: 0
   m_PixelSnapping: 1
-  m_CropFrameX: 0
+  m_CropFrameX: 1
   m_CropFrameY: 0
   m_StretchFill: 0
 --- !u!81 &2061319978
