@@ -21,12 +21,12 @@ public class Game : Singleton<Game>
 
     public void PlayNextLevel()
     {
-        if (!Shop.Instance.Visiting)
+        if (!Shop.Instance.Visiting && m_CurrentWave < m_Waves.Count)
         {
             Shop.Instance.Visit();
             StopLevel();
         }
-        else if (m_CurrentWave <= m_Waves.Count)
+        else if (m_CurrentWave < m_Waves.Count)
         {
             CreateNextLevel();
         }
@@ -39,7 +39,8 @@ public class Game : Singleton<Game>
     public void Finish()
     {
         // TODO
-
+        print("Game Over");
+        
     }
 
     void CreateNextLevel()
