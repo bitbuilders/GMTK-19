@@ -176,8 +176,10 @@ public class won : Warrior
     private void MoveToSide(Direction direction)
     {
         Streak = 0;
+
+        int w = Won - m_MoveWon;
         SpendWon(m_MoveWon);
-        if (Won == 0) return;
+        if (w <= 0) return;
 
         if (WarriorBeat.Instance.IsInBeatForgiving())
         {

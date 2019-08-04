@@ -14,6 +14,18 @@ public class Game : Singleton<Game>
         CreateNextLevel();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+    }
+
     public void ReplayCurrentLevel()
     {
         CreateCurrentLevel();
@@ -51,17 +63,17 @@ public class Game : Singleton<Game>
 
     void CreateCurrentLevel()
     {
-        CreateLevel();
+        CreateLevel(false);
     }
 
-    void CreateLevel()
+    void CreateLevel(bool refreshShop = true)
     {
         Wave w = Instantiate(m_Waves[m_CurrentWave - 1]);
         m_Spawns = w.GetSpawnData();
         Destroy(w.gameObject);
 
         Shop.Instance.Visiting = false;
-        Shop.Instance.Refresh();
+        if (refreshShop) Shop.Instance.Refresh();
         SetupLevel();
     }
 
