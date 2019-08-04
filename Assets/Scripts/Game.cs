@@ -7,13 +7,10 @@ public class Game : Singleton<Game>
     [SerializeField] List<GameObject> m_Levels = null;
 
     GameObject m_PreviousLevel = null;
-    GameObject m_PreviousData = null;
-    List<Ally> m_PreviousAllies = null;
     int m_CurrentLevel = 0;
 
     private void Start()
     {
-        m_PreviousAllies = new List<Ally>();
         CreateNextLevel();
     }
 
@@ -33,14 +30,25 @@ public class Game : Singleton<Game>
 
     public void PlayNextLevel()
     {
-        if (m_CurrentLevel <= m_Levels.Count) CreateNextLevel();
-        else Finish();
-
-        SetupLevel();
+        if (!Shop.Instance.Visiting)
+        {
+            Shop.Instance.Visit();
+            StopLevel();
+        }
+        else if (m_CurrentLevel <= m_Levels.Count)
+        {
+            CreateNextLevel();
+            SetupLevel();
+        }
+        else
+        {
+            Finish();
+        }
     }
 
     public void Finish()
     {
+        // TODO
 
     }
 
@@ -49,6 +57,9 @@ public class Game : Singleton<Game>
         if (m_PreviousLevel) Destroy(m_PreviousLevel);
         m_CurrentLevel++;
         CreateLevel();
+        Shop.Instance.Visiting = false;
+        Shop.Instance.Refresh();
+        SetupLevel();
     }
 
     void CreateCurrentLevel()
@@ -65,11 +76,17 @@ public class Game : Singleton<Game>
 
     void CreateLevel()
     {
-        m_PreviousLevel = Instantiate(m_Levels[m_CurrentLevel - 1]);
+        //m_PreviousLevel = Instantiate(m_Levels[m_CurrentLevel - 1]);
     }
 
     void SetupLevel()
     {
         MakazeClan.Instance.Refresh();
+        MakazeClan.Instance.Playing = true;
+    }
+
+    void StopLevel()
+    {
+        MakazeClan.Instance.Playing = false;
     }
 }

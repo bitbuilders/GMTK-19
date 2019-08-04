@@ -22,14 +22,28 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_ForgivingMultiplier = 2.0f;
     [Tooltip("Percentage enemy offset from player BPM"), SerializeField, Range(0.0f, 1.0f)]
     float m_EnemyOffset = 0.5f;
+    [Tooltip("Normal music"), SerializeField]
+    AudioClip m_NormalMusic = null;
+    [Tooltip("Shop music"), SerializeField]
+    AudioClip m_ShopMusic = null;
     [SerializeField] EnemyBeat m_EnemyBeat = null;
     [SerializeField] PlayerBeat m_PlayerBeat = null;
     [SerializeField] PlayerPostBeat m_PlayerPostBeat = null;
 
     public float BPS { get; private set; }
-    public float BPM { get { return m_BPM; } }
+    public int BPM
+    {
+        get { return m_BPM; }
+        set
+        {
+            m_BPM = value;
+            m_AudioSource.Stop();
+            ResetValues();
+        }
+    }
 
     AudioSource m_AudioSource = null;
+    AudioClip m_CurrentClip = null;
     float m_LastBeat = 0.0f;
     float m_PlayerTime = 0.0f;
     float m_PostPlayerTime = 0.0f;
@@ -42,19 +56,10 @@ public class WarriorBeat : Singleton<WarriorBeat>
     float m_EnemyLifetime = 0.0f;
     bool m_DonePost = false;
 
-    private void Start()
+    private void Awake()
     {
-        ResetValues();
-
         m_AudioSource = GetComponent<AudioSource>();
-        //m_AudioSource.pitch = m_BPM / 60.0f;
-        m_AudioSource.Play();
-    }
-
-    public void Replay()
-    {
-        ResetValues();
-        m_AudioSource.Play();
+        PlayNormalMusic();
     }
 
     void ResetValues()
@@ -63,6 +68,26 @@ public class WarriorBeat : Singleton<WarriorBeat>
         m_EnemyTime = BPS * m_EnemyOffset;
         m_PlayerTime = -m_MusicTimeOffset;
         m_HalfWindow = m_AttackWindow / 2.0f;
+        m_AudioSource.clip = m_CurrentClip;
+        m_AudioSource.Play();
+    }
+
+    public void RestartTrack()
+    {
+        m_AudioSource.Stop();
+        ResetValues();
+    }
+
+    public void PlayNormalMusic()
+    {
+        m_CurrentClip = m_NormalMusic;
+        BPM = 120;
+    }
+
+    public void PlayShopMusic()
+    {
+        m_CurrentClip = m_ShopMusic;
+        BPM = 60;
     }
 
     bool first = true;
@@ -117,7 +142,7 @@ public class WarriorBeat : Singleton<WarriorBeat>
 
     public bool IsInBeat()
     {
-        print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
+        //print($"{Time.time - m_LastBeat} | W: {m_HalfWindow}");
         return Time.time - m_LastBeat <= m_HalfWindow ||
             BPS - (Time.time - m_LastBeat) <= m_HalfWindow;
     }
