@@ -11,8 +11,11 @@ public class MakazeClan : Singleton<MakazeClan>
 
     public won Enemy { get { return m_Won; } }
     public List<Makaze> Makazes { get; private set; }
+    public bool Playing { get; set; } = false;
+
     int m_SpawnRate = 0;
     int m_BeatsPassed = 0;
+    int m_TotalBeats = 0;
 
     private void Start()
     {
@@ -25,6 +28,7 @@ public class MakazeClan : Singleton<MakazeClan>
         Clear();
 
         m_BeatsPassed = 0;
+        m_TotalBeats = 0;
         ResetSpawnRate();
     }
 
@@ -42,12 +46,25 @@ public class MakazeClan : Singleton<MakazeClan>
 
     public void OnBeat()
     {
+        if (!Playing || m_TotalBeats >= 20) return;
+
         m_BeatsPassed++;
+        m_TotalBeats++;
         if (m_BeatsPassed >= m_SpawnRate)
         {
             m_BeatsPassed = 0;
             ResetSpawnRate();
             SpawnMakaze();
+        }
+    }
+
+    public void OnPostBeat()
+    {
+        if (Makazes.Count == 0 && m_TotalBeats >= 20)
+        {
+            Playing = false;
+            Refresh();
+            Game.Instance.PlayNextLevel();
         }
     }
 

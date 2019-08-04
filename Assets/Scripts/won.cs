@@ -23,8 +23,8 @@ public class HeldAlly
 public class won : Warrior
 {
     [SerializeField, Range(1, 10)] int m_StartingColumn = 3;
-    [SerializeField, Range(0, 16)] int m_Won = 0;
-    [SerializeField, Range(0, 16)] int m_WonCap = 16;
+    [SerializeField, Range(0, 32)] int m_Won = 0;
+    [SerializeField, Range(0, 32)] int m_WonCap = 16;
     [SerializeField, Range(0, 5)] int m_FlairWon = 1;
     [SerializeField, Range(0, 5)] int m_PickupWon = 2;
     [SerializeField, Range(0, 5)] int m_SwapWon = 2;
@@ -40,6 +40,7 @@ public class won : Warrior
 
     HeldAlly m_HeldAlly = null;
     Movement m_QueuedDirection;
+    bool m_StreakedLastBeat = false;
     bool m_MovedThisBeat = false;
     bool m_UsedFirstFlair = false;
 
@@ -68,8 +69,28 @@ public class won : Warrior
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            if (m_HeldAlly.Ally) Throw();
-            else Attack();
+            if (Shop.Instance.Visiting)
+            {
+                if (Position.x == 2)
+                {
+                    if (m_HeldAlly.Ally)
+                    {
+                        Ally ally = GetAllyOnTile(Position);
+                        if (ally) Swap(ally);
+                    }
+
+                    Shop.Instance.Exit();
+                }
+                else
+                {
+                    Shop.Instance.BuyItem();
+                }
+            }
+            else
+            {
+                if (m_HeldAlly.Ally) Throw();
+                else Attack();
+            }
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -125,6 +146,11 @@ public class won : Warrior
     public void PostBeatUpdate()
     {
         m_MovedThisBeat = false;
+        if (!m_StreakedLastBeat)
+        {
+            Streak = 0;
+        }
+        m_StreakedLastBeat = false;
     }
 
     private void MoveToSide(Direction direction)
@@ -165,13 +191,9 @@ public class won : Warrior
     void Attack()
     {
         SpendWon(m_AttackWon);
-        if (!WarriorBeat.Instance.IsInBeat())
-        {
-            Streak = 0;
-            return;
-        }
+        if (!WarriorBeat.Instance.IsInBeat()) return;
 
-        StreakUp();
+        Streak = 0;
 
         // Swing
         foreach (Makaze m in MakazeClan.Instance.Makazes)
@@ -249,6 +271,7 @@ public class won : Warrior
         if (makaze) tossPos = makaze.Position + Vector2Int.up;
 
         allyToThrow.Attack(tossPos);
+        if (!allyToThrow.Weapon) makaze.Kill();
     }
 
     Makaze GetMakazeInColumn()
@@ -272,11 +295,12 @@ public class won : Warrior
         return makaze;
     }
 
-    Ally GetAllyOnTile(Vector2Int position)
+    public Ally GetAllyOnTile(Vector2Int position, bool checkHeld = true)
     {
         foreach (Ally ally in Allies)
         {
-            if (!ally || ally == m_HeldAlly.Ally) continue;
+            if (!ally) continue;
+            if (checkHeld && ally == m_HeldAlly.Ally) continue;
 
             if (ally.Position - position == Vector2Int.zero)
             {
@@ -336,14 +360,18 @@ public class won : Warrior
         return tile;
     }
 
-    void StreakUp()
+    void StreakUp(bool gainWon = true)
     {
         Streak++;
-        m_Won += Streak;
-        m_Won = Mathf.Clamp(m_Won, 0, m_WonCap);
+        m_StreakedLastBeat = true;
+        if (gainWon)
+        {
+            m_Won += Streak;
+            m_Won = Mathf.Clamp(m_Won, 0, m_WonCap);
+        }
     }
 
-    void SpendWon(int won)
+    public void SpendWon(int won)
     {
         m_Won -= won;
         m_Won = Mathf.Max(m_Won, 0);
@@ -367,7 +395,12 @@ public class won : Warrior
         m_HeldAlly.Ally.transform.position = transform.position;
     }
 
-    public void Respawn(bool withAliveAllies = false)
+    public void EquipWeapon(Weapon weapon)
+    {
+        m_HeldAlly.Ally.SetWeapon(weapon);
+    }
+
+    public void Respawn(bool deadToo = true)
     {
         gameObject.SetActive(true);
         m_Won = 1;
@@ -376,7 +409,14 @@ public class won : Warrior
 
         ResetPosition();
 
-        if (withAliveAllies)
+        //Ally[] tempAllies = Allies.ToArray();
+        //foreach (Ally ally in tempAllies)
+        //{
+        //    Allies.Remove(ally);
+        //    Destroy(ally.gameObject);
+        //}
+
+        if (!deadToo)
         {
             Ally[] tempAllies = Allies.ToArray();
             foreach (Ally ally in tempAllies)
@@ -400,7 +440,7 @@ public class won : Warrior
         Drop(false);
         gameObject.SetActive(false);
         Dead = true;
-        Respawn();
+        Respawn(false);
 
         Game.Instance.ReplayCurrentLevel();
     }

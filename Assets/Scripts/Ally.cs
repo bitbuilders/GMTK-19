@@ -9,7 +9,9 @@ public class Ally : Warrior
     [SerializeField] Weapon m_Weapon = null;
     [SerializeField, Range(0, 10)] int m_AttackPauses = 1;
 
+    public Weapon Weapon { get { return m_Weapon; } }
     public bool Attacking { get; private set; }
+    public bool ShopItem { get; set; }
 
     won m_won = null;
     Vector2Int m_GhostPosition = Vector2Int.zero;
@@ -17,14 +19,14 @@ public class Ally : Warrior
 
     private void Awake()
     {
-        StartingPosition = Vector2Int.right * (m_StartingColumn - 1);
+        if (!ShopItem) StartingPosition = Vector2Int.right * (m_StartingColumn - 1);
     }
 
     public override void Start()
     {
         base.Start();
         m_won = MakazeClan.Instance.Enemy;
-        m_won.Allies.Add(this);
+        if (!ShopItem) m_won.Allies.Add(this);
 
         if (m_Weapon)
         {
@@ -62,6 +64,8 @@ public class Ally : Warrior
 
     public void SetWeapon(Weapon weapon)
     {
+        if (m_Weapon) Destroy(m_Weapon.gameObject);
+
         m_Weapon = weapon;
         m_Weapon.transform.parent = m_Arm;
         OrientWeapon();
