@@ -37,6 +37,10 @@ public class won : Warrior
     [SerializeField] AudioClip m_FlairClip;
     [SerializeField] AudioClip m_PunchClip;
     [SerializeField] AudioClip m_PickupClip;
+    [SerializeField] AudioClip m_MoveClip;
+
+    [SerializeField] GameObject m_SamuraiSprite;
+
 
     public int Streak { get; private set; }
     public int Won { get { return m_Won; } }
@@ -66,6 +70,13 @@ public class won : Warrior
 
     void LateUpdate()
     {
+        if (WarriorBeat.Instance.IsInBeat())
+        {
+            m_SamuraiSprite.SetActive(true);
+        } else
+        {
+            m_SamuraiSprite.SetActive(false);
+        }
         if (Input.GetKeyDown(KeyCode.A))
         {
             MoveToSide(Direction.LEFT);
@@ -195,6 +206,8 @@ public class won : Warrior
     public override void Move(Vector2Int amount, bool setPosAnyways = false)
     {
         base.Move(amount, setPosAnyways);
+        m_Voice.clip = m_MoveClip;
+        m_Voice.Play();
         m_Voice.panStereo = -1 + Position.x * .5f;
     }
 

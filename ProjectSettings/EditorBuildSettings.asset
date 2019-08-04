@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Battle Grid.unity
+    path: Assets/Scenes/Wesley Grid.unity
     guid: 4a26731373b7d0f45badb3531f14e99f
   m_configObjects: {}
