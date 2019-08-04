@@ -1153,7 +1153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -73.49, y: -14.580002}
+  m_AnchoredPosition: {x: -73.49, y: -14.580017}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &706296352
@@ -1972,7 +1972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BPM: 120
   m_MusicTimeOffset: 0
-  m_AttackWindow: 0.2
+  m_AttackWindow: 0.3
   m_ForgivingMultiplier: 1.5
   m_EnemyOffset: 0.5
   m_NormalMusic: {fileID: 8300000, guid: bd675ff5e490156478b473bc6b236c10, type: 3}
