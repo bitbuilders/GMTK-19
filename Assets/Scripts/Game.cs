@@ -4,28 +4,19 @@ using UnityEngine;
 
 public class Game : Singleton<Game>
 {
-    [SerializeField] List<GameObject> m_Levels = null;
+    [SerializeField] List<Wave> m_Waves = null;
 
-    GameObject m_PreviousLevel = null;
-    int m_CurrentLevel = 0;
+    List<bool> m_Spawns = null;
+    int m_CurrentWave = 0;
 
     private void Start()
     {
         CreateNextLevel();
     }
 
-    public void ReplayPreviousLevel()
-    {
-        if (m_CurrentLevel > 1) CreatePreviousLevel();
-        else ReplayCurrentLevel();
-
-        SetupLevel();
-    }
-
     public void ReplayCurrentLevel()
     {
         CreateCurrentLevel();
-        SetupLevel();
     }
 
     public void PlayNextLevel()
@@ -35,10 +26,9 @@ public class Game : Singleton<Game>
             Shop.Instance.Visit();
             StopLevel();
         }
-        else if (m_CurrentLevel <= m_Levels.Count)
+        else if (m_CurrentWave <= m_Waves.Count)
         {
             CreateNextLevel();
-            SetupLevel();
         }
         else
         {
@@ -54,34 +44,29 @@ public class Game : Singleton<Game>
 
     void CreateNextLevel()
     {
-        if (m_PreviousLevel) Destroy(m_PreviousLevel);
-        m_CurrentLevel++;
+        m_CurrentWave++;
         CreateLevel();
-        Shop.Instance.Visiting = false;
-        Shop.Instance.Refresh();
-        SetupLevel();
     }
 
     void CreateCurrentLevel()
     {
-        if (m_PreviousLevel) Destroy(m_PreviousLevel);
-        CreateLevel();
-    }
-
-    void CreatePreviousLevel()
-    {
-        if (m_PreviousLevel) Destroy(m_PreviousLevel);
         CreateLevel();
     }
 
     void CreateLevel()
     {
-        //m_PreviousLevel = Instantiate(m_Levels[m_CurrentLevel - 1]);
+        Wave w = Instantiate(m_Waves[m_CurrentWave - 1]);
+        m_Spawns = w.GetSpawnData();
+        Destroy(w.gameObject);
+
+        Shop.Instance.Visiting = false;
+        Shop.Instance.Refresh();
+        SetupLevel();
     }
 
     void SetupLevel()
     {
-        MakazeClan.Instance.Refresh();
+        MakazeClan.Instance.Refresh(m_Spawns);
         MakazeClan.Instance.Playing = true;
     }
 

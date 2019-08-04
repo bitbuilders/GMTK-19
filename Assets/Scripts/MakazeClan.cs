@@ -11,25 +11,25 @@ public class MakazeClan : Singleton<MakazeClan>
 
     public won Enemy { get { return m_Won; } }
     public List<Makaze> Makazes { get; private set; }
+    public List<bool> Spawns { get; private set; }
     public bool Playing { get; set; } = false;
+    public bool Spawning { get; private set; }
 
     int m_SpawnRate = 0;
     int m_BeatsPassed = 0;
-    int m_TotalBeats = 0;
 
     private void Start()
     {
         Makazes = new List<Makaze>();
-        ResetSpawnRate();
     }
 
-    public void Refresh()
+    public void Refresh(List<bool> spawns)
     {
         Clear();
+        Spawns = spawns;
 
         m_BeatsPassed = 0;
-        m_TotalBeats = 0;
-        ResetSpawnRate();
+        Spawning = true;
     }
 
     public void Clear()
@@ -46,40 +46,47 @@ public class MakazeClan : Singleton<MakazeClan>
 
     public void OnBeat()
     {
-        if (!Playing || m_TotalBeats >= 20) return;
+        if (!Playing || !Spawning) return;
+
+        int startIndex = m_BeatsPassed * 5;
+        for (int i = startIndex; i < startIndex + 5; i++)
+        {
+            if (i >= Spawns.Count)
+            {
+                Spawning = false;
+                break;
+            }
+
+            if (!Spawns[i]) continue;
+
+            Vector2Int startPos = GetStartingPosition(i - startIndex);
+            SpawnMakaze(startPos);
+        }
 
         m_BeatsPassed++;
-        m_TotalBeats++;
-        if (m_BeatsPassed >= m_SpawnRate)
-        {
-            m_BeatsPassed = 0;
-            ResetSpawnRate();
-            SpawnMakaze();
-        }
     }
 
     public void OnPostBeat()
     {
-        if (Makazes.Count == 0 && m_TotalBeats >= 20)
+        if (!Playing) return;
+        
+        if (Makazes.Count == 0 && !Spawning)
         {
             Playing = false;
-            Refresh();
             Game.Instance.PlayNextLevel();
         }
     }
 
-    void SpawnMakaze()
+    void SpawnMakaze(Vector2Int startingPosition)
     {
         GameObject go = Instantiate(m_MakazeTemplate, Vector3.zero, Quaternion.identity, null);
         Makaze m = go.GetComponent<Makaze>();
-        m.StartingPosition = GetStartingPosition();
+        m.StartingPosition = startingPosition;
         Makazes.Add(m);
     }
 
-    Vector2Int GetStartingPosition()
+    Vector2Int GetStartingPosition(int x)
     {
-        int maxX = BattleGrid.Instance.Bounds.x;
-        int x = Random.Range(0, maxX + 1);
         int y = BattleGrid.Instance.Bounds.y;
 
         return new Vector2Int(x, y);
@@ -98,10 +105,5 @@ public class MakazeClan : Singleton<MakazeClan>
                 }
             }
         }
-    }
-
-    void ResetSpawnRate()
-    {
-        m_SpawnRate = Random.Range(m_SpawnRateMin, m_SpawnRateMax + 1);
     }
 }
