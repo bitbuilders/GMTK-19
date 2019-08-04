@@ -27,8 +27,11 @@ public class Wave : MonoBehaviour
         //{
         //    for (int i = 0; i < m_WaveEnemies.Count; i++)
         //    {
-        //        m_WaveEnemies[i].GetComponent<SpriteRenderer>().enabled = true;
-        //        m_WaveEnemies[i].gameObject.SetActive(false);
+        //        int x = i % 5;
+        //        int xPos = x - 2;
+        //        m_WaveEnemies[i].transform.localPosition = Vector3.right * xPos;
+        //        //m_WaveEnemies[i].GetComponent<SpriteRenderer>().enabled = true;
+        //        //m_WaveEnemies[i].gameObject.SetActive(false);
         //    }
         //    set = false;
         //}
