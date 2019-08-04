@@ -9,6 +9,8 @@ public class Game : Singleton<Game>
     List<bool> m_Spawns = null;
     int m_CurrentWave = 0;
 
+    [SerializeField] GameObject m_Ending;
+
     private void Start()
     {
         CreateNextLevel();
@@ -52,7 +54,7 @@ public class Game : Singleton<Game>
     {
         // TODO
         print("Game Over");
-        
+        m_Ending.SetActive(true);
     }
 
     void CreateNextLevel()
