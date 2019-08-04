@@ -154,11 +154,12 @@ public class Shop : Singleton<Shop>
         m_CurrentItems.Add(shopItem);
     }
 
-    public void Exit()
+    public void Exit(bool died)
     {
         m_TreeRoot.gameObject.SetActive(false);
         m_RegularLane.gameObject.SetActive(true);
-        Game.Instance.PlayNextLevel();
+        if (!died) Game.Instance.PlayNextLevel();
+        else Game.Instance.ReplayCurrentLevel();
         WarriorBeat.Instance.PlayNormalMusic();
     }
 }

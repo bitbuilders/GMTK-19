@@ -42,8 +42,7 @@ public class Makaze : Warrior
         }
         else if (Position.y == 0)
         {
-            // Special side strike to kill player
-
+            MakazeClan.Instance.Enemy.Kill();
         }
     }
 
