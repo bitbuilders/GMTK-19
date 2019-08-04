@@ -288,7 +288,7 @@ MonoBehaviour:
     type: 3}
   m_DropSprite: {fileID: 3303988218376537383, guid: 969d629ac3e11144ba88bfba754e6b1b,
     type: 3}
-  m_MoveSprite: {fileID: 7366178677551348873, guid: 969d629ac3e11144ba88bfba754e6b1b,
+  m_MoveSprite: {fileID: 473104673983368901, guid: 9af4df31dfb2b724485d1477623a9603,
     type: 3}
   m_PunchSprite: {fileID: -6309609620086278508, guid: 969d629ac3e11144ba88bfba754e6b1b,
     type: 3}
